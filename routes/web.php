@@ -8,6 +8,9 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestMail;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,11 +21,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('democart');
-})->name('cart');
-
+Route::get('/test-email', function () {
+    Mail::to('helo@example.com')->send(new TestMail());
+    return "Test email sent!";
+});
 
 Route::get('/admin/category/index', [CategoryController::class, 'index'])->name('admin.category.index');
 Route::get('/admin/category/create-category-page', [CategoryController::class, 'create'])->name('admin.category.create');

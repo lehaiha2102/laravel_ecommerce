@@ -36,8 +36,8 @@ return [
     'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
-            'port' => env('MAIL_PORT', 587),
+            'host' => env('MAIL_HOST', 'smtp.mailtrap.io'),
+            'port' => env('MAIL_PORT', 2525),
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
@@ -59,7 +59,7 @@ return [
 
         'sendmail' => [
             'transport' => 'sendmail',
-            'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -t -i'),
+            'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs'),
         ],
 
         'log' => [
@@ -110,9 +110,34 @@ return [
     'markdown' => [
         'theme' => 'default',
 
-        'paths' => [
+        'paths' =>
+        [
             resource_path('views/vendor/mail'),
         ],
     ],
+    /*
+|--------------------------------------------------------------------------
+| Log Channel
+|--------------------------------------------------------------------------
+|
+| If you are using the "log" driver, you may specify the logging channel
+| if you prefer to keep mail messages separate from other log entries
+| for simpler reading. Otherwise, the default channel will be used.
+|
+*/
 
+    'log_channel' => env('MAIL_LOG_CHANNEL'),
+
+    /*
+|--------------------------------------------------------------------------
+| Email Pretend
+|--------------------------------------------------------------------------
+|
+| When this option is enabled, e-mail will not actually be sent over the
+| web and will instead be written to your application's logs files so
+| you may inspect the message. This is great for local development.
+|
+*/
+
+    'pretend' => false,
 ];
