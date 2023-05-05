@@ -17,17 +17,18 @@ Create New Product
                 </div>
                 @endif
                 @foreach ($products as $product)
-                <form method="POST" action="{{ route('admin.product.update', ['id' => $category->id])}}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('admin.product.update', ['id' => $product->id])}}" enctype="multipart/form-data">
                     @csrf
+                    @method('PATCH')
                     <div class="position-relative form-group">
                         <label for="name" class="">Name</label>
                         <input name="name" value="{{ $product->name }}" id="name" placeholder="Enter a product name" type="text" class="form-control">
                     </div>
                     <div>
                         <label>Choose categories for the product</label>
-                        @foreach($product->categories as $category)
+                        @foreach ($categories as $category)
                         <div>
-                            <input type="checkbox" name="category_id[]" value="{{ $category->id }}" id="category{{ $category->id }}">
+                            <input type="checkbox" name="category_id[]" value="{{ $category->id }}" id="category{{ $category->id }}" @if (in_array($category->id, explode(',', $product->category_ids))) checked @endif>
                             <label for="category{{ $category->id }}">{{ $category->name }}</label>
                         </div>
                         @endforeach
@@ -36,31 +37,38 @@ Create New Product
                     <div class="position-relative form-group">
                         <label for="exampleSelect" class="">Manufacturer</label>
                         <select name="manufacturer_id" id="exampleSelect" class="form-control">
-                            <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
+                            @foreach ($manufacturers as $manufacturer)
+                            <option value="{{ $manufacturer->id }}" @if ($manufacturer->id == $product->manufacturer_id) selected @endif>{{ $manufacturer->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="position-relative form-group">
                         <label for="import_price" class="">Import price</label>
-                        <input name="import_price" id="import_price" placeholder="Enter a product import price" type="text" class="form-control">
+                        <input name="import_price" value="{{$product->import_price}}" id="import_price" placeholder="Enter a product import price" type="text" class="form-control">
                     </div>
                     <div class="position-relative form-group">
                         <label for="price" class="">Price</label>
-                        <input name="price" id="price" placeholder="Enter a product price" type="text" class="form-control">
+                        <input name="price" value="{{$product->price}}" id="price" placeholder="Enter a product price" type="text" class="form-control">
                     </div>
                     <div class="position-relative form-group">
                         <label for="quantity" class="">Quantity</label>
-                        <input name="quantity" id="quantity" placeholder="Enter a product quantity" type="text" class="form-control">
+                        <input name="quantity" value="{{$product->quantity}}" id="quantity" placeholder="Enter a product quantity" type="text" class="form-control">
                     </div>
                     <div class="position-relative form-group">
                         <label for="exampleText" class="">Description</label>
-                        <textarea name="description" id="exampleText" class="form-control"></textarea>
+                        <textarea name="description" value="" id="exampleText" class="form-control">{{$product->description}}</textarea>
                     </div>
                     <div class="position-relative form-group">
-                        <label for="image-category" class="">Files</label>
-                        <input class="form-control-file" type="file" name="images[]" multiple onchange="previewImages()">
-                        <div id="preview-container"></div>
+                        <label for="image-product" class="">Files</label>
+                        <input class="form-control-file" type="file" id="image-product" name="images[]" value="{{$product->images}}" multiple onchange="previewImage(event)">
+                        @php $images = json_decode($product->images); @endphp
+                        @foreach ($images as $image)
+                        <div id="image-preview">
+                        <img id="preview" src="/images/products/{{ $image }}" alt="Preview" style="max-width:160px; height:80px;">
+                        </div>
+                        @endforeach
                     </div>
-                    <button class="mt-1 btn btn-primary">Add Product</button>
+                    <button class="mt-1 btn btn-primary">Update Product</button>
                 </form>
                 @endforeach
             </div>
@@ -70,44 +78,48 @@ Create New Product
 @endsection
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    function readURL(input) {
+    function previewImage(event) {
+        var input = event.target;
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-
             reader.onload = function(e) {
-                $('#preview').attr('src', e.target.result);
-                $('#preview').show();
+                var imgContainer = document.createElement("div");
+                imgContainer.classList.add("preview-container");
+
+                var imgElement = document.createElement("img");
+                imgElement.src = e.target.result;
+                imgElement.classList.add("preview-image");
+                imgElement.style.maxWidth = "160px";
+                imgElement.style.height = "80px";
+                imgContainer.appendChild(imgElement);
+
+                var cancelBtn = document.createElement("button");
+                cancelBtn.innerHTML = "x";
+                cancelBtn.classList.add("cancel-btn");
+                cancelBtn.style = `
+                                position: absolute;
+                                top: 0;
+                                right: 0;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                width: 20px;
+                                height: 20px;
+                                background-color: red;
+                                color: white;
+                                border-radius: 50%;
+                                font-size: 12px;
+                                cursor: pointer;
+                                border: none;
+                                `;
+                cancelBtn.addEventListener("click", function() {
+                    imgContainer.remove();
+                });
+                imgContainer.appendChild(cancelBtn);
+
+                document.getElementById("image-preview").appendChild(imgContainer);
             }
-
-            reader.readAsDataURL(input.files[0]); // convert to base64 string
-        }
-    }
-
-    $(document).ready(function() {
-        $('input[type="file"]').change(function() {
-            readURL(this);
-        });
-    });
-</script>
-
-<script>
-    function previewImages() {
-        var previewContainer = document.getElementById('preview-container');
-        previewContainer.innerHTML = '';
-
-        if (this.files) {
-            [].forEach.call(this.files, function(file) {
-                var reader = new FileReader();
-                reader.onload = function(event) {
-                    var img = document.createElement('img');
-                    img.src = event.target.result;
-                    img.alt = 'Preview';
-                    img.style.maxWidth = '160px';
-                    img.style.height = '80px';
-                    previewContainer.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
+            reader.readAsDataURL(input.files[0]);
         }
     }
 </script>

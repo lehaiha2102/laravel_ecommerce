@@ -29,3 +29,4 @@ Route::get('user/information/{id}', [UserController::class, 'userInfor'])->name(
 Route::post('user/sign-up', [UserController::class, 'store'])->name('user.store');
 Route::post('user/update/{id}', [UserController::class, 'update'])->name('user.update');
 Route::delete('user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
+Route::get('verify-email/{email}/{token}', [UserController::class, 'verify'])->name('verify');

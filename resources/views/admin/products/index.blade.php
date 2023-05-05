@@ -52,7 +52,7 @@ Products
                             <th class="text-center">Image</th>
                             <th class="text-center">Quantity</th>
                             <th class="text-center">Price</th>
-                            <th class="text-center">Manufacturer</th>
+                            <th class="text-center">products</th>
                             <th class="text-center">Categories</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Actions</th>
@@ -77,7 +77,9 @@ Products
                                 {{ $product->category_names }}
                                 @endif
                             </td>
-                            <td class="text-center"> {{ $product->status == 1 ? 'Active' : 'Decommissioning' }} </td>
+                            <td class="text-center status-toggle" data-product-id="{{ $product->id }}" data-status="{{ $product->status }}">
+                                {{ $product->status == 1 ? 'Active' : 'Decommissioning' }}
+                            </td>
                             <td class="text-center">
                                 <a href="{{ route('admin.product.edit', ['id' => $product->id]) }}" class="btn btn-warning"><i class="pe-7s-pen"></i></a>
                                 <button type="button" class="btn btn-danger" data-id="{{$product->id}}" data-toggle="modal" data-target="#exampleModal{{$product->id}}">
@@ -116,3 +118,36 @@ Products
     </div>
 </div>
 @endforeach
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.status-toggle').click(function() {
+            var product_id = $(this).data('product-id');
+            var current_status = $(this).data('status');
+            var new_status = current_status == 1 ? 0 : 1;
+
+            $.ajax({
+                url: '{{ route("admin.product.change-status") }}',
+                type: 'POST',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    'product_id': product_id,
+                    'status': new_status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('.status-toggle[data-product-id="' + product_id + '"]').data('status', new_status);
+                        $('.status-toggle[data-product-id="' + product_id + '"]').text(new_status == 1 ? 'Active' : 'Decommissioning');
+                        alertify.success(response.message);
+                    } else {
+                        alertify.warning(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alertify.error('Something went wrong. Please try again later.');
+                }
+            });
+        });
+    });
+</script>
+

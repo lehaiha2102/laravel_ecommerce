@@ -29,7 +29,9 @@
     <!-- Bootstrap theme -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css" />
 
-    <link href="{{ asset('vendor/toastr/toastr.min.css') }}" rel="stylesheet">
-    <script src="{{ asset('vendor/toastr/toastr.min.js') }}"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @yield('style')
 </head>

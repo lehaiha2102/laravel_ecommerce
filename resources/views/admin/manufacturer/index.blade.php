@@ -66,7 +66,9 @@ Manufacturers
                             <td class="text-center"> {{ $manufacturer->email }} </td>
                             <td class="text-center"> {{ $manufacturer->address }} </td>
                             <td class="text-center"> {{ $manufacturer->slug }} </td>
-                            <td class="text-center"> {{ $manufacturer->status = 1 ? 'Active' : 'Decommissioning' }} </td>
+                            <td class="text-center status-toggle" data-manufacturer-id="{{ $manufacturer->id }}" data-status="{{ $manufacturer->status }}">
+                                {{ $manufacturer->status == 1 ? 'Active' : 'Decommissioning' }}
+                            </td>
                             <td class="text-center">
                                 <a href="{{ route('admin.manufacturer.edit', ['id' => $manufacturer->id]) }}" class="btn btn-warning"><i class="pe-7s-pen"></i></a>
                                 <button type="button" class="btn btn-danger" data-id="{{$manufacturer->id}}" data-toggle="modal" data-target="#exampleModal{{$manufacturer->id}}">
@@ -105,3 +107,36 @@ Manufacturers
     </div>
 </div>
 @endforeach
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.status-toggle').click(function() {
+            var manufacturer_id = $(this).data('manufacturer-id');
+            var current_status = $(this).data('status');
+            var new_status = current_status == 1 ? 0 : 1;
+
+            $.ajax({
+                url: '{{ route("admin.manufacturer.change-status") }}',
+                type: 'POST',
+                data: {
+                    '_token': '{{ csrf_token() }}',
+                    'manufacturer_id': manufacturer_id,
+                    'status': new_status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('.status-toggle[data-manufacturer-id="' + manufacturer_id + '"]').data('status', new_status);
+                        $('.status-toggle[data-manufacturer-id="' + manufacturer_id + '"]').text(new_status == 1 ? 'Active' : 'Decommissioning');
+                        alertify.success(response.message);
+                    } else {
+                        alertify.warning(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alertify.error('Something went wrong. Please try again later.');
+                }
+            });
+        });
+    });
+</script>
+

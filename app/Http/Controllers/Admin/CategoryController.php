@@ -23,9 +23,7 @@ class CategoryController extends Controller
     }
     public function create()
     {
-        $categories = DB::table('categories')
-            ->select('name', 'id')
-            ->get();
+        $categories = DB::table('categories')->get();
 
         return view('admin.categories.add', compact('categories'));
     }

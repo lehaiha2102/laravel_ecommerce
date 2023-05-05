@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Mail;
-use App\Mail\TestMail;
+use App\Mail\Verify;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,18 +21,13 @@ use App\Mail\TestMail;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/test-email', function () {
-    Mail::to('helo@example.com')->send(new TestMail());
-    return "Test email sent!";
-});
-
 Route::get('/admin/category/index', [CategoryController::class, 'index'])->name('admin.category.index');
 Route::get('/admin/category/create-category-page', [CategoryController::class, 'create'])->name('admin.category.create');
 Route::post('/admin/category/create', [CategoryController::class, 'store'])->name('admin.category.store');
 Route::get('/admin/category/edit/{id}', [CategoryController::class, 'edit'])->name('admin.category.edit');
 Route::patch('/admin/category/update/{id}', [CategoryController::class, 'update'])->name('admin.category.update');
 Route::delete('/admin/category/delete/{id}', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
-Route::post('/categories/change-status', [CategoryController::class, 'changeStatus'])->name('admin.categories.change-status');
+Route::post('/admin/categories/change-status', [CategoryController::class, 'changeStatus'])->name('admin.categories.change-status');
 
 // Route::get('admin/attribute/index', [AttributeController::class, 'index'])->name('admin.attribute.index');
 // Route::get('/admin/attribute/create-attribute-page', [AttributeController::class, 'create'])->name('admin.attribute.create');
@@ -47,6 +42,8 @@ Route::post('/admin/manufacturer/create', [ManufacturerController::class, 'store
 Route::get('/admin/manufacturer/edit/{id}', [ManufacturerController::class, 'edit'])->name('admin.manufacturer.edit');
 Route::patch('/admin/manufacturer/update/{id}', [ManufacturerController::class, 'update'])->name('admin.manufacturer.update');
 Route::delete('/admin/manufacturer/delete/{id}', [ManufacturerController::class, 'destroy'])->name('admin.manufacturer.destroy');
+Route::post('/admin/manufacturer/change-status', [ManufacturerController::class, 'changeStatus'])->name('admin.manufacturer.change-status');
+
 
 Route::get('admin/product/index', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create-product-page', [ProductController::class, 'create'])->name('admin.product.create');
@@ -54,6 +51,7 @@ Route::post('/admin/product/create', [ProductController::class, 'store'])->name(
 Route::get('/admin/product/edit/{id}', [ProductController::class, 'edit'])->name('admin.product.edit');
 Route::patch('/admin/product/update/{id}', [ProductController::class, 'update'])->name('admin.product.update');
 Route::delete('/admin/product/delete/{id}', [ProductController::class, 'destroy'])->name('admin.product.destroy');
+Route::post('/admin/product/change-status', [ProductController::class, 'changeStatus'])->name('admin.product.change-status');
 
 Route::get('admin/role/index', [RoleController::class, 'index'])->name('admin.role.index');
 Route::get('/admin/role/create-role-page', [RoleController::class, 'create'])->name('admin.role.create');
@@ -62,7 +60,7 @@ Route::get('/admin/role/edit/{id}', [RoleController::class, 'edit'])->name('admi
 Route::patch('/admin/role/update/{id}', [RoleController::class, 'update'])->name('admin.role.update');
 Route::delete('/admin/role/delete/{id}', [RoleController::class, 'destroy'])->name('admin.role.destroy');
 
-Route::get('admin/user/index', [UserController::class, 'index'])->name('admin.user.index');
+Route::get('/admin/user/index', [UserController::class, 'index'])->name('admin.user.index');
 Route::get('/admin/user/create-user-page', [UserController::class, 'create'])->name('admin.user.create');
 Route::post('/admin/user/create', [UserController::class, 'store'])->name('admin.user.store');
 Route::get('/admin/user/edit/{id}', [UserController::class, 'edit'])->name('admin.user.edit');
